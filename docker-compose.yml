@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+  webapplication2:
+    image: ${DOCKER_REGISTRY-}webapplication2
+    build:
+      context: .
+      dockerfile: WebApplication2/Dockerfile
+    depends_on:
+      - elk
+      - db
+      - rabbit
+      - redis
+
+  db:
+    image: microsoft/mssql-server-linux:latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "VcDERqwfaDs4bkEHDJ1H"
+    ports:
+      - "1433:1433"
+
+  elk:
+    image: sebp/elk
+    ports:
+      - "5601:5601"
+      - "9200:9200"
+      - "5044:5044"
+
+  rabbit:
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    ports:
+      - "5672:5672"
+      - 15672:15672
+
+  redis:
+    image: "redis:alpine"
+    hostname: redis
+    ports:
+      - "6379:6379"
